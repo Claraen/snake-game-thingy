@@ -25,26 +25,27 @@ function setup() {
 function draw() {
   clear();
   background(0);
-  
   direction = checkKeys(direction);
-  if (direction == "left") {
-    snakeBlocks = moveLeft(snakeBlocks);
-  } else if (direction == "up") {
-    snakeBlocks = moveUp(snakeBlocks);
-  } else if (direction == "down"){
-    snakeBlocks = moveDown(snakeBlocks);
-  }else{
-    snakeBlocks = moveRight(snakeBlocks);
-  }  
-  if(!dead){
-    frameRate(speed);
-  }
-
-
+  checkDirection(direction);
   drawScore(score, snakeBlocks);
   drawFood(food);
   drawBadFood(badFood);
   drawSnake(snakeBlocks);
+    if(!dead){
+    frameRate(speed);
+  }
+}
+
+function checkDirection(direction){
+  if (direction == "left") {
+    snakeBlocks = move(snakeBlocks,direction,0,-1);
+  } else if (direction == "up") {
+    snakeBlocks = move(snakeBlocks,direction,-1,0);
+  } else if (direction == "down"){
+    snakeBlocks = move(snakeBlocks,direction,1,0);
+  }else{
+    snakeBlocks = move(snakeBlocks,direction,0,1);
+  }  
 }
 
 function drawScore(score, snakeBlocks){
@@ -87,19 +88,23 @@ function drawSnake(snakeBlocks) {
 
 function die() {
   dead = true;
-  let button = createButton("Restart");
   console.log("no");
   let dieTxt = 'Bruh';
+  dieButton();
   fill(220, 20, 60);
   textSize(30);
   text(dieTxt, 255, 280);
+  frameRate(0);
+}
+
+function dieButton(){
+  let button = createButton("Restart");
   button.id = 'restart';
   button.size(200, 100);
   button.position(200, 320);
   button.style("font-family", "Bodoni");
   button.style("font-size", "48px");
   button.mouseClicked(restartGame);
-  frameRate(0);
 }
 
 function restartGame() {
@@ -174,48 +179,14 @@ function checkBadFood(arr, direction, snakeBlocks) {
   }
 }
 
-function moveRight(snakeBlocks) {
-  if (touchingEdge("right", snakeBlocks) || touchingSelf()) {
+function move(snakeBlocks, direction, upDown, rightLeft){
+  if (touchingEdge(direction, snakeBlocks) || touchingSelf()) {
     die();
   }
   var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-
-  snakeBlocks = checkFood(food, "right", snakeBlocks);
-  checkBadFood(badFood, "right", snakeBlocks);
-  snakeBlocks.push([foreSquare[0] + 1, foreSquare[1]]);
-  return snakeBlocks;
-}
-
-function moveLeft(snakeBlocks) {
-  if (touchingEdge("left", snakeBlocks) || touchingSelf()) {
-    die();
-  }
-  snakeBlocks = checkFood(food, "left", snakeBlocks);
-  checkBadFood(badFood, "left", snakeBlocks);
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-  snakeBlocks.push([foreSquare[0] - 1, foreSquare[1]]);
-  return snakeBlocks;
-}
-
-function moveUp(snakeBlocks) {
-  if (touchingEdge("up", snakeBlocks) || touchingSelf()) {
-    die();
-  }
-  snakeBlocks = checkFood(food, "up", snakeBlocks);
-  checkBadFood(badFood, "up", snakeBlocks);
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-  snakeBlocks.push([foreSquare[0], foreSquare[1] - 1]);
-  return snakeBlocks;
-}
-
-function moveDown(snakeBlocks) {
-  if (touchingEdge("down", snakeBlocks) || touchingSelf()) {
-    die();
-  }
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-  snakeBlocks = checkFood(food, "down", snakeBlocks);
-  checkBadFood(badFood, "up", snakeBlocks);
-  snakeBlocks.push([foreSquare[0], foreSquare[1] + 1]);
+  snakeBlocks = checkFood(food, direction, snakeBlocks);
+  checkBadFood(badFood, direction, snakeBlocks);
+  snakeBlocks.push([foreSquare[0] + rightLeft, foreSquare[1] + upDown]);
   return snakeBlocks;
 }
 
