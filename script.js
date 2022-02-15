@@ -1,12 +1,12 @@
-var blockSize = 20;
-var snakeBlocks = [];
-var food = [];
-var direction = '';
-var jankyCounter = 0;
-var score = 0;
-var speed = 6;
-var dead = false;
-var badFood = [];
+let blockSize = 20;
+let snakeBlocks = [];
+let food = [];
+let direction = '';
+let jankyCounter = 0;
+let score = 0;
+let speed = 6;
+let dead = false;
+let badFood = [];
 
 function setup() {
   dead = false;
@@ -25,26 +25,27 @@ function setup() {
 function draw() {
   clear();
   background(0);
-  
   direction = checkKeys(direction);
-  if (direction == "left") {
-    snakeBlocks = moveLeft(snakeBlocks);
-  } else if (direction == "up") {
-    snakeBlocks = moveUp(snakeBlocks);
-  } else if (direction == "down"){
-    snakeBlocks = moveDown(snakeBlocks);
-  }else{
-    snakeBlocks = moveRight(snakeBlocks);
-  }  
-  if(!dead){
-    frameRate(speed);
-  }
-
-
+  checkDirection(direction);
   drawScore(score, snakeBlocks);
   drawFood(food);
   drawBadFood(badFood);
   drawSnake(snakeBlocks);
+    if(!dead){
+    frameRate(speed);
+  }
+}
+
+function checkDirection(direction){
+  if (direction == "left") {
+    snakeBlocks = move(snakeBlocks,direction,0,-1);
+  } else if (direction == "up") {
+    snakeBlocks = move(snakeBlocks,direction,-1,0);
+  } else if (direction == "down"){
+    snakeBlocks = move(snakeBlocks,direction,1,0);
+  }else{
+    snakeBlocks = move(snakeBlocks,direction,0,1);
+  }  
 }
 
 function drawScore(score, snakeBlocks){
@@ -87,29 +88,47 @@ function drawSnake(snakeBlocks) {
 
 function die() {
   dead = true;
-  let button = createButton("Restart");
   console.log("no");
   let dieTxt = 'Bruh';
+  dieButton();
   fill(220, 20, 60);
   textSize(30);
   text(dieTxt, 255, 280);
+  frameRate(0);
+}
+
+function dieButton(){
+  let button = createButton("Restart");
   button.id = 'restart';
   button.size(200, 100);
   button.position(200, 320);
   button.style("font-family", "Bodoni");
   button.style("font-size", "48px");
   button.mouseClicked(restartGame);
-  frameRate(0);
 }
 
 function restartGame() {
-  var b = document.getElementsByTagName("button");
+  let b = document.getElementsByTagName("button");
   b[jankyCounter].style.display = "none";
   setup();
   jankyCounter++;
 }
 
 function touchingSelf() {
+ let newPose = newPos(direction, snakeBlocks);
+  if (checkBody(snakeBlocks, newPose)) {
+    die();
+  }
+}
+
+function touchingEdge(direction, snakeBlocks) {
+  let newPose = newPos(direction, snakeBlocks);
+  if (newPose[0] >= 30 || newPose[0] < 0 || newPose[1] >= 30 || newPose[1] < 0) {
+    die();
+  }
+}
+
+function newPos(direction,snakeBlocks){
   let newPos = [];
   if (direction == "right") {
     newPos = [snakeBlocks[snakeBlocks.length - 1][0] + 1, snakeBlocks[snakeBlocks.length - 1][1]];
@@ -120,16 +139,14 @@ function touchingSelf() {
   } else if (direction == "down") {
     newPos = [snakeBlocks[snakeBlocks.length - 1][0], snakeBlocks[snakeBlocks.length - 1][1] + 1];
   }
-  if (checkBody(snakeBlocks, newPos)) {
-    die();
-  }
+  return newPos
 }
 
 function checkBody(snakeBlocks, newPos) {
   let check = 0;
-  for (var i = 0; i < snakeBlocks.length; i++) {
+  for (let i = 0; i < snakeBlocks.length; i++) {
     check = 0;
-    for (var u = 0; u < 2; u++) {
+    for (let u = 0; u < 2; u++) {
       if (snakeBlocks[i][u] == newPos[u]) {
         check++;
      } 
@@ -139,22 +156,6 @@ function checkBody(snakeBlocks, newPos) {
     }
   }
   return false;
-}
-
-function touchingEdge(direction, snakeBlocks) {
-  var newPos = [];
-  if (direction == "right") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0] + 1, snakeBlocks[snakeBlocks.length - 1][1]];
-  } else if (direction == "left") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0] - 1, snakeBlocks[snakeBlocks.length - 1][1]];
-  } else if (direction == "up") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0], snakeBlocks[snakeBlocks.length - 1][1] - 1];
-  } else if (direction == "down") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0], snakeBlocks[snakeBlocks.length - 1][1] + 1];
-  }
-  if (newPos[0] >= 30 || newPos[0] < 0 || newPos[1] >= 30 || newPos[1] < 0) {
-    die();
-  }
 }
 
 function checkFood(arr, direction, snakeBlocks) {
@@ -174,61 +175,27 @@ function checkBadFood(arr, direction, snakeBlocks) {
   }
 }
 
-function moveRight(snakeBlocks) {
-  if (touchingEdge("right", snakeBlocks) || touchingSelf()) {
+function move(snakeBlocks, direction, upDown, rightLeft){
+  if (touchingEdge(direction, snakeBlocks) || touchingSelf()) {
     die();
   }
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-
-  snakeBlocks = checkFood(food, "right", snakeBlocks);
-  checkBadFood(badFood, "right", snakeBlocks);
-  snakeBlocks.push([foreSquare[0] + 1, foreSquare[1]]);
-  return snakeBlocks;
-}
-
-function moveLeft(snakeBlocks) {
-  if (touchingEdge("left", snakeBlocks) || touchingSelf()) {
-    die();
-  }
-  snakeBlocks = checkFood(food, "left", snakeBlocks);
-  checkBadFood(badFood, "left", snakeBlocks);
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-  snakeBlocks.push([foreSquare[0] - 1, foreSquare[1]]);
-  return snakeBlocks;
-}
-
-function moveUp(snakeBlocks) {
-  if (touchingEdge("up", snakeBlocks) || touchingSelf()) {
-    die();
-  }
-  snakeBlocks = checkFood(food, "up", snakeBlocks);
-  checkBadFood(badFood, "up", snakeBlocks);
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-  snakeBlocks.push([foreSquare[0], foreSquare[1] - 1]);
-  return snakeBlocks;
-}
-
-function moveDown(snakeBlocks) {
-  if (touchingEdge("down", snakeBlocks) || touchingSelf()) {
-    die();
-  }
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
-  snakeBlocks = checkFood(food, "down", snakeBlocks);
-  checkBadFood(badFood, "up", snakeBlocks);
-  snakeBlocks.push([foreSquare[0], foreSquare[1] + 1]);
+  let foreSquare = snakeBlocks[snakeBlocks.length - 1];
+  snakeBlocks = checkFood(food, direction, snakeBlocks);
+  checkBadFood(badFood, direction, snakeBlocks);
+  snakeBlocks.push([foreSquare[0] + rightLeft, foreSquare[1] + upDown]);
   return snakeBlocks;
 }
 
 function addFood(snakeBlocks) {
-  var foodx = 0;
-  var foody = 0;
-  var check = true;
-  var arr = [];
+  let foodx = 0;
+  let foody = 0;
+  let check = true;
+  let arr = [];
   while (check) {
     foodx = Math.floor(random(0, 30));
     foody = Math.floor(random(0, 30));
 
-    for (var i = 0; i < snakeBlocks.length; i++) {
+    for (let i = 0; i < snakeBlocks.length; i++) {
       if (snakeBlocks[i][0] == foodx && snakeBlocks[i][1] == foody) {
         break;
       } else if (snakeBlocks.length - 1 == i) {
@@ -241,15 +208,15 @@ function addFood(snakeBlocks) {
 }
 
 function addBadFood(snakeBlocks) {
-  var foodx = 0;
-  var foody = 0;
-  var check = true;
-  var arr = [];
+  let foodx = 0;
+  let foody = 0;
+  let check = true;
+  let arr = [];
   while (check) {
     foodx = Math.floor(random(0, 30));
     foody = Math.floor(random(0, 30));
 
-    for (var i = 0; i < snakeBlocks.length; i++) {
+    for (let i = 0; i < snakeBlocks.length; i++) {
       if (snakeBlocks[i][0] == foodx && snakeBlocks[i][1] == foody) {
         break;
       } else if (snakeBlocks.length - 1 == i) {
@@ -277,7 +244,6 @@ function drawBadFood(foodPosition) {
 function touchFood(food, direction, snakeBlock) {
   if (checkPositions(snakeBlocks, food)) {
     return true;
-    console.log('true');
   }
   return false;
 }
