@@ -146,8 +146,8 @@ function checkBody(snakeBlocks, newPos) {
   return false;
 }
 
-function touchingEdge(direction, snakeBlocks) {
-  var newPos = [];
+function newPos(direction,snakeBlocks){
+  let newPos = [];
   if (direction == "right") {
     newPos = [snakeBlocks[snakeBlocks.length - 1][0] + 1, snakeBlocks[snakeBlocks.length - 1][1]];
   } else if (direction == "left") {
@@ -157,7 +157,12 @@ function touchingEdge(direction, snakeBlocks) {
   } else if (direction == "down") {
     newPos = [snakeBlocks[snakeBlocks.length - 1][0], snakeBlocks[snakeBlocks.length - 1][1] + 1];
   }
-  if (newPos[0] >= 30 || newPos[0] < 0 || newPos[1] >= 30 || newPos[1] < 0) {
+  return newPos
+}
+
+function touchingEdge(direction, snakeBlocks) {
+  let newPose = newPos(direction, snakeBlocks);
+  if (newPose[0] >= 30 || newPose[0] < 0 || newPose[1] >= 30 || newPose[1] < 0) {
     die();
   }
 }
