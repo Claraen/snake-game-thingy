@@ -1,12 +1,12 @@
-var blockSize = 20;
-var snakeBlocks = [];
-var food = [];
-var direction = '';
-var jankyCounter = 0;
-var score = 0;
-var speed = 6;
-var dead = false;
-var badFood = [];
+let blockSize = 20;
+let snakeBlocks = [];
+let food = [];
+let direction = '';
+let jankyCounter = 0;
+let score = 0;
+let speed = 6;
+let dead = false;
+let badFood = [];
 
 function setup() {
   dead = false;
@@ -108,7 +108,7 @@ function dieButton(){
 }
 
 function restartGame() {
-  var b = document.getElementsByTagName("button");
+  let b = document.getElementsByTagName("button");
   b[jankyCounter].style.display = "none";
   setup();
   jankyCounter++;
@@ -144,9 +144,9 @@ function newPos(direction,snakeBlocks){
 
 function checkBody(snakeBlocks, newPos) {
   let check = 0;
-  for (var i = 0; i < snakeBlocks.length; i++) {
+  for (let i = 0; i < snakeBlocks.length; i++) {
     check = 0;
-    for (var u = 0; u < 2; u++) {
+    for (let u = 0; u < 2; u++) {
       if (snakeBlocks[i][u] == newPos[u]) {
         check++;
      } 
@@ -179,7 +179,7 @@ function move(snakeBlocks, direction, upDown, rightLeft){
   if (touchingEdge(direction, snakeBlocks) || touchingSelf()) {
     die();
   }
-  var foreSquare = snakeBlocks[snakeBlocks.length - 1];
+  let foreSquare = snakeBlocks[snakeBlocks.length - 1];
   snakeBlocks = checkFood(food, direction, snakeBlocks);
   checkBadFood(badFood, direction, snakeBlocks);
   snakeBlocks.push([foreSquare[0] + rightLeft, foreSquare[1] + upDown]);
@@ -187,15 +187,15 @@ function move(snakeBlocks, direction, upDown, rightLeft){
 }
 
 function addFood(snakeBlocks) {
-  var foodx = 0;
-  var foody = 0;
-  var check = true;
-  var arr = [];
+  let foodx = 0;
+  let foody = 0;
+  let check = true;
+  let arr = [];
   while (check) {
     foodx = Math.floor(random(0, 30));
     foody = Math.floor(random(0, 30));
 
-    for (var i = 0; i < snakeBlocks.length; i++) {
+    for (let i = 0; i < snakeBlocks.length; i++) {
       if (snakeBlocks[i][0] == foodx && snakeBlocks[i][1] == foody) {
         break;
       } else if (snakeBlocks.length - 1 == i) {
@@ -208,15 +208,15 @@ function addFood(snakeBlocks) {
 }
 
 function addBadFood(snakeBlocks) {
-  var foodx = 0;
-  var foody = 0;
-  var check = true;
-  var arr = [];
+  let foodx = 0;
+  let foody = 0;
+  let check = true;
+  let arr = [];
   while (check) {
     foodx = Math.floor(random(0, 30));
     foody = Math.floor(random(0, 30));
 
-    for (var i = 0; i < snakeBlocks.length; i++) {
+    for (let i = 0; i < snakeBlocks.length; i++) {
       if (snakeBlocks[i][0] == foodx && snakeBlocks[i][1] == foody) {
         break;
       } else if (snakeBlocks.length - 1 == i) {
