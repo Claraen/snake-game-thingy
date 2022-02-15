@@ -115,35 +115,17 @@ function restartGame() {
 }
 
 function touchingSelf() {
-  let newPos = [];
-  if (direction == "right") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0] + 1, snakeBlocks[snakeBlocks.length - 1][1]];
-  } else if (direction == "left") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0] - 1, snakeBlocks[snakeBlocks.length - 1][1]];
-  } else if (direction == "up") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0], snakeBlocks[snakeBlocks.length - 1][1] - 1];
-  } else if (direction == "down") {
-    newPos = [snakeBlocks[snakeBlocks.length - 1][0], snakeBlocks[snakeBlocks.length - 1][1] + 1];
-  }
-  if (checkBody(snakeBlocks, newPos)) {
+ let newPose = newPos(direction, snakeBlocks);
+  if (checkBody(snakeBlocks, newPose)) {
     die();
   }
 }
 
-function checkBody(snakeBlocks, newPos) {
-  let check = 0;
-  for (var i = 0; i < snakeBlocks.length; i++) {
-    check = 0;
-    for (var u = 0; u < 2; u++) {
-      if (snakeBlocks[i][u] == newPos[u]) {
-        check++;
-     } 
-    }
-    if (check == 2) {
-      return true;
-    }
+function touchingEdge(direction, snakeBlocks) {
+  let newPose = newPos(direction, snakeBlocks);
+  if (newPose[0] >= 30 || newPose[0] < 0 || newPose[1] >= 30 || newPose[1] < 0) {
+    die();
   }
-  return false;
 }
 
 function newPos(direction,snakeBlocks){
@@ -160,11 +142,20 @@ function newPos(direction,snakeBlocks){
   return newPos
 }
 
-function touchingEdge(direction, snakeBlocks) {
-  let newPose = newPos(direction, snakeBlocks);
-  if (newPose[0] >= 30 || newPose[0] < 0 || newPose[1] >= 30 || newPose[1] < 0) {
-    die();
+function checkBody(snakeBlocks, newPos) {
+  let check = 0;
+  for (var i = 0; i < snakeBlocks.length; i++) {
+    check = 0;
+    for (var u = 0; u < 2; u++) {
+      if (snakeBlocks[i][u] == newPos[u]) {
+        check++;
+     } 
+    }
+    if (check == 2) {
+      return true;
+    }
   }
+  return false;
 }
 
 function checkFood(arr, direction, snakeBlocks) {
@@ -253,7 +244,6 @@ function drawBadFood(foodPosition) {
 function touchFood(food, direction, snakeBlock) {
   if (checkPositions(snakeBlocks, food)) {
     return true;
-    console.log('true');
   }
   return false;
 }
