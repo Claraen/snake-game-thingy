@@ -19,7 +19,7 @@ function setup() {
   drawSnake(snakeBlocks);
   food = addFood(snakeBlocks);
   badFood = addBadFood(snakeBlocks);
-  drawFood(food);
+  drawFood(food,50,250);
 }
 
 function draw() {
@@ -229,8 +229,8 @@ function addBadFood(snakeBlocks) {
 }
 
 
-function drawFood(foodPosition) {
-  fill(50, 250, 50);
+function drawFood(foodPosition,red,green) {
+  fill(red, green, 50);
   square(foodPosition[0] * 20, foodPosition[1] * 20, 19);
   fill(255, 255, 255);
 }
